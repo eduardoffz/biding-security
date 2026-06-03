@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erro - Bidding System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        :root { --primary: #0f172a; --accent: #2563eb; --bg: #f8fafc; --text: #334155; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; padding: 2rem; }
+        h1 { font-size: 3rem; color: var(--primary); margin-bottom: 1rem; }
+        p { color: #64748b; margin-bottom: 2rem; max-width: 400px; line-height: 1.5; }
+        .btn { padding: 0.75rem 1.5rem; background: var(--accent); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div style="font-size: 4rem; margin-bottom: 1rem;">🚧</div>
+    <h1 th:text="${status != null} ? 'Erro ' + ${status} : 'Algo deu errado'">Página não encontrada</h1>
+    <p th:text="${message != null} ? ${message} : 'A requisição não pôde ser concluída. Verifique a URL ou retorne ao início.'">
+        A requisição não pôde ser concluída.
+    </p>
+    <a th:href="@{/editais}" class="btn">Voltar ao Painel</a>
+</body>
+</html>

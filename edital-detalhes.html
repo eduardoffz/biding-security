@@ -1,0 +1,45 @@
+package com.bidding.system.frontend.controller;
+
+import com.bidding.system.frontend.service.ApiService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+// Exercício 8 - Página "Meus Lances" para fornecedor
+@Controller
+public class MeusLancesController {
+
+    private final ApiService apiService;
+
+    public MeusLancesController(ApiService apiService) {
+        this.apiService = apiService;
+    }
+
+    // GET /meus-lances
+    @GetMapping("/meus-lances")
+    public String meusLances(HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        String role  = (String) session.getAttribute("role");
+
+        if (token == null) return "redirect:/login";
+
+        // Exercício 8 - apenas FORNECEDOR acessa esta página
+        if (!"FORNECEDOR".equals(role)) {
+            model.addAttribute("erro", "Acesso negado. Esta página é exclusiva para fornecedores.");
+            return "erro";
+        }
+
+        try {
+            List<Map> lances = apiService.meusLances(token);
+            model.addAttribute("lances", lances);
+        } catch (Exception e) {
+            model.addAttribute("erro", "Erro ao carregar seus lances.");
+        }
+
+        return "meus-lances";
+    }
+}

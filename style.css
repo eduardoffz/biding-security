@@ -1,0 +1,63 @@
+package com.bidding.system.frontend.controller;
+
+import com.bidding.system.frontend.service.ApiService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+// Exercício 4 - Listagem dod editais
+@Controller
+public class EditalPageController {
+
+    private final ApiService apiService;
+
+    public EditalPageController(ApiService apiService) {
+        this.apiService = apiService;
+    }
+
+    // GET /editais e GET /editais?urgente=true
+    @GetMapping("/editais")
+    public String listarEditais(@RequestParam(required = false) Boolean urgente,
+                                HttpSession session,
+                                Model model) {
+        String token = (String) session.getAttribute("token");
+        if (token == null) return "redirect:/login";
+
+        try {
+            List<Map> editais = apiService.listarEditais(token);
+
+            // Exercício 4 - filtro urgente: ABERTO com fechamento nas próximas 48h
+            if (Boolean.TRUE.equals(urgente)) {
+                LocalDateTime limite = LocalDateTime.now().plusHours(48);
+                DateTimeFormatter fmt = DateTimeFormatter.ISO_DATE_TIME;
+                editais = editais.stream()
+                    .filter(e -> "ABERTO".equals(e.get("status")))
+                    .filter(e -> {
+                        try {
+                            String dataStr = (String) e.get("dataFechamento");
+                            LocalDateTime data = LocalDateTime.parse(dataStr, fmt);
+                            return data.isBefore(limite);
+                        } catch (Exception ex) {
+                            return false;
+                        }
+                    })
+                    .collect(Collectors.toList());
+                model.addAttribute("urgente", true);
+            }
+
+            model.addAttribute("editais", editais);
+            model.addAttribute("role", session.getAttribute("role"));
+        } catch (Exception e) {
+            model.addAttribute("erro", "Erro ao carregar editais.");
+        }
+
+        return "editais";
+    }
+}

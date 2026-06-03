@@ -1,0 +1,113 @@
+package com.bidding.system.frontend.service;
+
+import com.bidding.system.frontend.dto.Dtos.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.Map;
+
+// Exercício 2 - Serviço de cliente REST
+@Service
+public class ApiService {
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${backend.base-url}")
+    private String baseUrl;
+
+    // Monta headers com JWT
+    private HttpHeaders headersComToken(String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
+        return headers;
+    }
+
+    private HttpHeaders headersSemToken() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
+    }
+
+    // Exercício 2 - registrar usuário
+    public void registrarUsuario(UserDTO user) {
+        HttpEntity<UserDTO> request = new HttpEntity<>(user, headersSemToken());
+        restTemplate.postForEntity(baseUrl + "/api/auth/registrar", request, Object.class);
+    }
+
+    // Exercício 2 - logar
+    public LoginResponseDTO logar(UserRequestDTO credentials) {
+        HttpEntity<UserRequestDTO> request = new HttpEntity<>(credentials, headersSemToken());
+        ResponseEntity<LoginResponseDTO> response = restTemplate.postForEntity(
+            baseUrl + "/api/auth/logar", request, LoginResponseDTO.class
+        );
+        return response.getBody();
+    }
+
+    // Exercício 2 - listar editais
+    public List<Map> listarEditais(String token) {
+        HttpEntity<Void> request = new HttpEntity<>(headersComToken(token));
+        ResponseEntity<List<Map>> response = restTemplate.exchange(
+            baseUrl + "/api/editais",
+            HttpMethod.GET,
+            request,
+            new ParameterizedTypeReference<List<Map>>() {}
+        );
+        return response.getBody();
+    }
+
+    // Exercício 2 - criar edital
+    public void criarEdital(EditalDTO edital, String token) {
+        HttpEntity<EditalDTO> request = new HttpEntity<>(edital, headersComToken(token));
+        restTemplate.postForEntity(baseUrl + "/api/editais", request, Object.class);
+    }
+
+    // Exercício 2 - registrar lance
+    public void registrarLance(Long editalId, LanceDTO lance, String token) {
+        HttpEntity<LanceDTO> request = new HttpEntity<>(lance, headersComToken(token));
+        restTemplate.postForEntity(
+            baseUrl + "/api/editais/" + editalId + "/lances", request, Object.class
+        );
+    }
+
+    // Buscar edital por ID
+    public Map buscarEdital(Long id, String token) {
+        HttpEntity<Void> request = new HttpEntity<>(headersComToken(token));
+        ResponseEntity<Map> response = restTemplate.exchange(
+            baseUrl + "/api/editais/" + id,
+            HttpMethod.GET,
+            request,
+            Map.class
+        );
+        return response.getBody();
+    }
+
+    // Exercício 7 - listar lances de um edital
+    public List<Map> listarLances(Long editalId, String token) {
+        HttpEntity<Void> request = new HttpEntity<>(headersComToken(token));
+        ResponseEntity<List<Map>> response = restTemplate.exchange(
+            baseUrl + "/api/editais/" + editalId + "/lances",
+            HttpMethod.GET,
+            request,
+            new ParameterizedTypeReference<List<Map>>() {}
+        );
+        return response.getBody();
+    }
+
+    // Exercício 8 - meus lances (fornecedor autenticado)
+    public List<Map> meusLances(String token) {
+        HttpEntity<Void> request = new HttpEntity<>(headersComToken(token));
+        ResponseEntity<List<Map>> response = restTemplate.exchange(
+            baseUrl + "/api/lances/meus-lances",
+            HttpMethod.GET,
+            request,
+            new ParameterizedTypeReference<List<Map>>() {}
+        );
+        return response.getBody();
+    }
+}

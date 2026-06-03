@@ -1,0 +1,57 @@
+package com.bidding.system.frontend.controller;
+
+import com.bidding.system.frontend.service.ApiService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+// Exercício 7 - Visualização de lances por edital
+@Controller
+public class LancesController {
+
+    private final ApiService apiService;
+
+    public LancesController(ApiService apiService) {
+        this.apiService = apiService;
+    }
+
+    // GET /editais/{id}/lances
+    @GetMapping("/editais/{id}/lances")
+    public String verLances(@PathVariable Long id, HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        String email = (String) session.getAttribute("email");
+        String role  = (String) session.getAttribute("role");
+
+        if (token == null) return "redirect:/login";
+
+        try {
+            Map edital = apiService.buscarEdital(id, token);
+            List<Map> lances = apiService.listarLances(id, token);
+
+            boolean editalAberto = "ABERTO".equals(edital.get("status"));
+
+            // Exercício 7 - regras de visibilidade
+            // ABERTO: fornecedor vê apenas o próprio lance; ENCERRADO: todos veem tudo
+            if (editalAberto && "FORNECEDOR".equals(role)) {
+                lances = lances.stream()
+                    .filter(l -> email.equals(l.get("emailUsuario")))
+                    .collect(Collectors.toList());
+                model.addAttribute("apenasProprio", true);
+            }
+
+            model.addAttribute("edital", edital);
+            model.addAttribute("lances", lances);
+            model.addAttribute("role", role);
+            model.addAttribute("editalAberto", editalAberto);
+        } catch (Exception e) {
+            model.addAttribute("erro", "Erro ao carregar lances.");
+        }
+
+        return "lances";
+    }
+}

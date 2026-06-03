@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editais - Bidding System</title>
+    <style>
+        
+        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        :root { --primary: #0f172a; --accent: #2563eb; --bg: #f8fafc; --surface: #ffffff; --text: #334155; --border: #e2e8f0; --radius: 8px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+        
+        /* Layout */
+        .sidebar { width: 250px; background: var(--primary); color: white; padding: 1.5rem; }
+        .sidebar h2 { font-size: 1.2rem; margin-bottom: 2rem; color: white; }
+        .sidebar a { display: block; color: #cbd5e1; text-decoration: none; padding: 0.75rem; margin-bottom: 0.5rem; border-radius: var(--radius); transition: 0.2s; }
+        .sidebar a:hover, .sidebar a.active { background: #1e293b; color: white; }
+        .main { flex: 1; display: flex; flex-direction: column; }
+        .navbar { height: 60px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; padding: 0 2rem; }
+        .content { padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+        
+        /* Elements */
+        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .btn { padding: 0.6rem 1.2rem; background: var(--accent); color: white; text-decoration: none; border-radius: var(--radius); font-weight: 500; border: none; cursor: pointer; }
+        .table-container { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f1f5f9; padding: 1rem; font-size: 0.85rem; color: #64748b; font-weight: 600; border-bottom: 1px solid var(--border); }
+        td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        .badge { background: #dcfce7; color: #166534; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>🔨 Bidding System</h2>
+        <a th:href="@{/editais}" class="active">📄 Editais Abertos</a>
+        <a th:href="@{/editais/novo}">➕ Novo Edital</a>
+        <a th:href="@{/lances/meus}">💰 Meus Lances</a>
+    </div>
+    <div class="main">
+        <div class="navbar"><a th:href="@{/login}" style="color: #ef4444; text-decoration: none; font-weight: 500;">Sair</a></div>
+        <div class="content">
+            <div class="header-flex">
+                <div>
+                    <h1 style="color: var(--primary);">Mural de Licitações</h1>
+                    <p style="color: #64748b; font-size: 0.9rem; margin-top: 0.25rem;">Acompanhe os processos ativos.</p>
+                </div>
+                <a th:href="@{/editais/novo}" class="btn">Novo Edital</a>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr><th>Processo</th><th>Objeto</th><th>Data Sessão</th><th>Status</th><th>Ação</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="edital : ${editais}">
+                            <td style="font-weight: 600;" th:text="${edital.numero}">PE-001/2026</td>
+                            <td th:text="${edital.objeto}">Computadores</td>
+                            <td th:text="${#temporals.format(edital.dataAbertura, 'dd/MM/yyyy HH:mm')}">10/10/2026 14:00</td>
+                            <td><span class="badge">Ativo</span></td>
+                            <td><a th:href="@{/editais/{id}(id=${edital.id})}" style="color: var(--accent); text-decoration: none; font-weight: 600;">Acessar</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

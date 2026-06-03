@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Edital</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        :root { --primary: #0f172a; --accent: #2563eb; --bg: #f8fafc; --surface: #ffffff; --text: #334155; --border: #e2e8f0; --radius: 8px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+        .sidebar { width: 250px; background: var(--primary); color: white; padding: 1.5rem; }
+        .sidebar h2 { font-size: 1.2rem; margin-bottom: 2rem; }
+        .sidebar a { display: block; color: #cbd5e1; text-decoration: none; padding: 0.75rem; margin-bottom: 0.5rem; border-radius: var(--radius); }
+        .sidebar a:hover, .sidebar a.active { background: #1e293b; color: white; }
+        .main { flex: 1; display: flex; flex-direction: column; }
+        .navbar { height: 60px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; padding: 0 2rem; }
+        .content { padding: 2rem; max-width: 800px; margin: 0 auto; width: 100%; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; }
+        .form-group { margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+        label { font-size: 0.85rem; font-weight: 600; color: var(--primary); }
+        input, textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); outline: none; }
+        input:focus, textarea:focus { border-color: var(--accent); }
+        .btn { padding: 0.75rem 1.5rem; background: var(--accent); color: white; border: none; border-radius: var(--radius); font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>🔨 Bidding System</h2>
+        <a th:href="@{/editais}">📄 Editais Abertos</a>
+        <a th:href="@{/editais/novo}" class="active">➕ Novo Edital</a>
+        <a th:href="@{/lances/meus}">💰 Meus Lances</a>
+    </div>
+    <div class="main">
+        <div class="navbar"><a th:href="@{/login}" style="color: #ef4444; text-decoration: none; font-weight: 500;">Sair</a></div>
+        <div class="content">
+            <h1 style="color: var(--primary); margin-bottom: 1.5rem;">Publicar Edital</h1>
+            <div class="card">
+                <form method="post" th:action="@{/editais/salvar}">
+                    <div class="form-group">
+                        <label>Número do Processo</label>
+                        <input type="text" name="numero" placeholder="PE-010/2026" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Data da Sessão</label>
+                        <input type="datetime-local" name="dataAbertura" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Objeto (Descrição)</label>
+                        <textarea name="objeto" rows="4" placeholder="Descreva os produtos/serviços..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Salvar e Publicar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

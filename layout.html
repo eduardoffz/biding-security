@@ -1,0 +1,38 @@
+package com.bidding.system.frontend.dto;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
+// Ex 2 - DTOs para comunicação com o backend
+
+public class Dtos {
+
+    public record UserDTO(
+        @NotBlank String nome,
+        @Email @NotBlank String email,
+        @NotBlank String senha,
+        @NotBlank String role  // COMPRADOR ou o FORNECEDOR
+    ) {}
+
+    public record UserRequestDTO(
+        @Email @NotBlank String email,
+        @NotBlank String senha
+    ) {}
+
+    public record EditalDTO(
+        String titulo,
+        String descricao,
+        String dataFechamento,
+        String status
+    ) {}
+
+    public record LanceDTO(
+        Double valor
+    ) {}
+
+    public record LoginResponseDTO(
+        String token,
+        String role,
+        String email
+    ) {}
+}
